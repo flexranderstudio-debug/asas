@@ -1,0 +1,2380 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#f6f4ee">
+  <meta name="description" content="Step inside an ASAS home and explore thoughtful furniture, materials, and craftsmanship room by room.">
+  <title>ASAS | A home, room by room</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f6f4ee;
+      --paper-light: #fcfbf7;
+      --ink: #292b25;
+      --muted: #77786f;
+      --olive: #687258;
+      --olive-dark: #4a533e;
+      --line: #e2dfd5;
+      --gold: #aa8b5e;
+      --gutter: clamp(20px, 6vw, 88px);
+      --header-height: 76px;
+      font-synthesis: none;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-snap-type: y mandatory;
+      scroll-padding-top: var(--header-height);
+    }
+
+    body {
+      min-width: 320px;
+      margin: 0;
+      overflow-x: hidden;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: "Segoe UI", Tahoma, Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    button {
+      color: inherit;
+      font: inherit;
+    }
+
+    .backdrops {
+      position: fixed;
+      z-index: 0;
+      inset: 0;
+      overflow: hidden;
+      background: #e6e2d8;
+      pointer-events: none;
+    }
+
+    .backdrop {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      opacity: 0;
+      transform: scale(var(--camera-scale, 1.14)) translate3d(var(--camera-x, 0px), var(--camera-y, 0px), 0);
+      filter: saturate(0.84) brightness(0.92);
+      transition: opacity 1100ms cubic-bezier(0.22, 0.61, 0.36, 1), filter 900ms ease;
+      will-change: opacity, transform;
+    }
+
+    .backdrop.is-active {
+      opacity: 1;
+      filter: saturate(0.88) brightness(0.98);
+    }
+
+    .backdrop-wash {
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(270deg, rgba(19, 20, 17, 0.58), rgba(19, 20, 17, 0.22) 36%, transparent 72%),
+        linear-gradient(0deg, rgba(22, 23, 19, 0.35), transparent 45%, rgba(22, 23, 19, 0.12));
+      transition: opacity 400ms ease;
+    }
+
+    .site-header {
+      position: sticky;
+      z-index: 10;
+      top: 0;
+      height: var(--header-height);
+      border-bottom: 1px solid rgba(41, 43, 37, 0.09);
+      background: rgba(250, 249, 244, 0.93);
+      backdrop-filter: blur(14px);
+    }
+
+    .header-inner {
+      display: flex;
+      width: min(100% - var(--gutter) * 2, 1440px);
+      height: 100%;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      margin: auto;
+    }
+
+    .brand {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .brand-mark {
+      display: grid;
+      width: 39px;
+      height: 39px;
+      place-items: center;
+      border: 1px solid var(--olive);
+      border-radius: 50%;
+      color: var(--olive-dark);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.15rem;
+      font-style: italic;
+    }
+
+    .brand-name {
+      display: block;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.42rem;
+      line-height: 1;
+    }
+
+    .brand-caption {
+      display: block;
+      margin-top: 5px;
+      color: var(--muted);
+      font-size: 0.58rem;
+    }
+
+    .main-nav {
+      display: flex;
+      align-items: center;
+      gap: clamp(16px, 3vw, 38px);
+    }
+
+    .main-nav a,
+    .header-note {
+      color: #5f6058;
+      font-size: 0.75rem;
+    }
+
+    .main-nav a {
+      transition: color 180ms ease;
+    }
+
+    .main-nav a:hover {
+      color: var(--olive);
+    }
+
+    .header-note {
+      direction: ltr;
+      letter-spacing: 0.12em;
+      white-space: nowrap;
+    }
+
+    @media (max-width: 1080px) and (min-width: 761px) {
+      .header-note {
+        display: none;
+      }
+    }
+
+    .menu-toggle {
+      display: none;
+      width: 42px;
+      height: 42px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      background: transparent;
+      cursor: pointer;
+    }
+
+    .menu-toggle span,
+    .menu-toggle span::before,
+    .menu-toggle span::after {
+      display: block;
+      width: 17px;
+      height: 1px;
+      background: var(--ink);
+    }
+
+    .menu-toggle span {
+      position: relative;
+    }
+
+    .menu-toggle span::before,
+    .menu-toggle span::after {
+      position: absolute;
+      right: 0;
+      content: "";
+    }
+
+    .menu-toggle span::before {
+      top: -5px;
+    }
+
+    .menu-toggle span::after {
+      top: 5px;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+    }
+
+    .scene {
+      position: relative;
+      display: flex;
+      min-height: calc(100svh - var(--header-height));
+      align-items: center;
+      padding: clamp(34px, 7vh, 80px) var(--gutter);
+      scroll-snap-align: start;
+      scroll-snap-stop: always;
+      isolation: isolate;
+      overflow: clip;
+    }
+
+    .scene-inner {
+      display: flex;
+      width: min(100%, 1440px);
+      align-items: center;
+      margin: auto;
+    }
+
+    .scene--welcome .scene-inner {
+      justify-content: flex-start;
+    }
+
+    .intro-card,
+    .detail-card,
+    .closing-card {
+      width: min(100%, 445px);
+      padding: clamp(26px, 4vw, 42px);
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      background: rgba(252, 251, 247, 0.86);
+      box-shadow: 0 22px 65px rgba(34, 34, 27, 0.16);
+      backdrop-filter: blur(15px);
+      pointer-events: auto;
+    }
+
+    .intro-card {
+      width: min(100%, 570px);
+      padding: clamp(32px, 5vw, 58px);
+      background: rgba(252, 251, 247, 0.92);
+    }
+
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--olive);
+      font-size: 0.69rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+    }
+
+    .eyebrow::before {
+      width: 25px;
+      height: 1px;
+      background: currentColor;
+      content: "";
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    .intro-card h1 {
+      margin: 20px 0 15px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(3rem, 7vw, 5.8rem);
+      font-weight: 400;
+      letter-spacing: -0.045em;
+      line-height: 1.04;
+    }
+
+    .intro-card h1 span {
+      color: var(--olive);
+    }
+
+    .intro-card > p,
+    .closing-card > p {
+      max-width: 440px;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 0.93rem;
+      line-height: 2;
+    }
+
+    .text-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      margin-top: 26px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--olive);
+      color: var(--olive-dark);
+      font-size: 0.82rem;
+    }
+
+    .text-link span {
+      transition: transform 180ms ease;
+    }
+
+    .text-link:hover span {
+      transform: translateX(-4px);
+    }
+
+    .entry-note {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      margin-top: 43px;
+      color: #77796f;
+      font-size: 0.7rem;
+    }
+
+    .entry-note::before {
+      width: 34px;
+      height: 1px;
+      background: var(--gold);
+      content: "";
+    }
+
+    .scene--product .scene-inner {
+      justify-content: flex-start;
+    }
+
+    .scene--product .scene-inner {
+      position: static;
+      width: auto;
+      margin: 0;
+    }
+
+    .detail-card {
+      position: absolute;
+      z-index: 4;
+      top: 18%;
+      right: clamp(30px, 7vw, 110px);
+      width: min(390px, 36vw);
+      max-height: 68%;
+      overflow-y: auto;
+      padding: 8px 0;
+      border: 0;
+      background: transparent;
+      box-shadow: none;
+      color: #fff;
+      text-shadow: 0 2px 12px rgba(16, 17, 15, 0.8);
+      opacity: 0.84;
+      transform: translateY(14px);
+      transition: opacity 650ms ease, transform 750ms cubic-bezier(0.22, 0.61, 0.36, 1);
+      scrollbar-width: thin;
+      scrollbar-color: rgba(255, 255, 255, 0.5) transparent;
+    }
+
+    .scene.is-current .detail-card {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .scene.is-product-focused .detail-card .detail-topline,
+    .scene.is-product-focused .detail-card .price-row,
+    .scene.is-product-focused .detail-card .product-specs,
+    .scene.is-product-focused .detail-card .craft-note {
+      display: none;
+    }
+
+    .scene.is-product-focused .detail-card h2 {
+      margin-top: 0;
+    }
+
+    .scene.is-product-focused .detail-card .product-subtitle {
+      font-size: 0.95rem;
+    }
+
+    .hotspot-layer {
+      position: absolute;
+      z-index: 5;
+      inset: 0;
+      pointer-events: none;
+      transform: scale(var(--focus-scale, 1)) translate3d(var(--camera-x, 0px), var(--camera-y, 0px), 0);
+      transform-origin: center;
+      transition: transform 650ms cubic-bezier(0.22, 0.61, 0.36, 1);
+      will-change: transform;
+    }
+
+    .room-marker {
+      position: absolute;
+      display: grid;
+      width: 42px;
+      height: 42px;
+      place-items: center;
+      padding: 0;
+      border: 0;
+      background: transparent;
+      color: #fff;
+      text-decoration: none;
+      cursor: pointer;
+      pointer-events: auto;
+      transform: translate(-50%, -50%);
+    }
+
+    .room-marker:hover,
+    .room-marker:focus-visible,
+    .room-marker.is-selected {
+      z-index: 1;
+    }
+
+    .room-marker:focus-visible {
+      outline: 1px solid #fff;
+      outline-offset: 3px;
+      border-radius: 50%;
+    }
+
+    .marker-dot {
+      position: relative;
+      width: 17px;
+      height: 17px;
+      border: 1px solid rgba(255, 255, 255, 0.95);
+      border-radius: 50%;
+      background: var(--gold);
+      box-shadow: 0 0 0 6px rgba(252, 251, 247, 0.19), 0 0 23px rgba(255, 250, 231, 0.7);
+      transition: transform 250ms ease, background 250ms ease;
+    }
+
+    .marker-dot::after {
+      position: absolute;
+      inset: -7px;
+      border: 1px solid rgba(255, 255, 255, 0.7);
+      border-radius: 50%;
+      content: "";
+      animation: marker-pulse 2.4s ease-out infinite;
+    }
+
+    .room-marker:hover .marker-dot,
+    .room-marker:focus-visible .marker-dot,
+    .room-marker.is-selected .marker-dot {
+      background: var(--olive);
+      transform: scale(1.25);
+    }
+
+    .marker-label {
+      position: absolute;
+      right: 27px;
+      width: max-content;
+      max-width: 190px;
+      color: #fff;
+      font-size: 0.79rem;
+      font-weight: 500;
+      text-shadow: 0 2px 10px rgba(16, 17, 15, 0.95);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateX(5px);
+      transition: opacity 200ms ease, transform 200ms ease;
+    }
+
+    .room-marker:hover .marker-label,
+    .room-marker:focus-visible .marker-label,
+    .room-marker.is-selected .marker-label {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .view-toggle {
+      position: fixed;
+      z-index: 11;
+      top: calc(var(--header-height) + 17px);
+      left: var(--gutter);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 13px;
+      border: 1px solid rgba(255, 255, 255, 0.65);
+      background: rgba(38, 40, 35, 0.62);
+      color: #fff;
+      font-size: 0.7rem;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: background 180ms ease, border-color 180ms ease;
+    }
+
+    .view-toggle:hover,
+    .view-toggle[aria-pressed="true"] {
+      border-color: #fff;
+      background: rgba(38, 40, 35, 0.83);
+    }
+
+    .view-toggle:disabled {
+      cursor: not-allowed;
+      opacity: 0.72;
+    }
+
+    .view-toggle-indicator {
+      width: 7px;
+      height: 7px;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+    }
+
+    .view-toggle[aria-pressed="true"] .view-toggle-indicator {
+      border-color: #d6c196;
+      background: #d6c196;
+      box-shadow: 0 0 9px rgba(214, 193, 150, 0.8);
+    }
+
+    .presentation-trigger,
+    .presentation-launch,
+    .language-toggle {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 9px;
+      cursor: pointer;
+      transition: background 180ms ease, color 180ms ease, transform 180ms ease, box-shadow 180ms ease;
+    }
+
+    .presentation-trigger {
+      border: 1px solid var(--olive-dark);
+      background: var(--olive-dark);
+      color: #fff;
+      padding: 10px 15px;
+      font-size: 0.72rem;
+      white-space: nowrap;
+    }
+
+    .presentation-launch {
+      border: 1px solid var(--olive-dark);
+      background: var(--olive-dark);
+      color: #fff;
+      min-height: 46px;
+      margin-top: 20px;
+      padding: 0 17px;
+      font-size: 0.8rem;
+    }
+
+    .language-toggle {
+      min-height: 40px;
+      padding: 0 12px;
+      border: 1px solid var(--line);
+      background: transparent;
+      color: var(--olive-dark);
+      font-size: 0.72rem;
+      white-space: nowrap;
+    }
+
+    .language-toggle:hover {
+      background: var(--paper);
+      transform: translateY(-1px);
+    }
+
+    .presentation-trigger:hover,
+    .presentation-launch:hover {
+      background: #353d2d;
+      box-shadow: 0 8px 24px rgba(41, 43, 37, 0.16);
+      transform: translateY(-2px);
+    }
+
+    .presentation-trigger:focus-visible,
+    .presentation-launch:focus-visible,
+    .language-toggle:focus-visible,
+    .presentation-controls button:focus-visible {
+      outline: 2px solid #d6c196;
+      outline-offset: 3px;
+    }
+
+    .presentation-icon {
+      display: inline-grid;
+      width: 18px;
+      height: 18px;
+      place-items: center;
+      border: 1px solid currentColor;
+      border-radius: 50%;
+      font-size: 0.6rem;
+      line-height: 1;
+    }
+
+    .presentation-controls {
+      position: fixed;
+      z-index: 20;
+      bottom: 22px;
+      left: 50%;
+      display: none;
+      align-items: center;
+      gap: 7px;
+      padding: 7px;
+      border: 1px solid rgba(255, 255, 255, 0.55);
+      background: rgba(31, 33, 29, 0.82);
+      box-shadow: 0 12px 40px rgba(0, 0, 0, 0.22);
+      color: #fff;
+      backdrop-filter: blur(14px);
+      transform: translateX(-50%);
+    }
+
+    .presentation-controls button {
+      min-height: 38px;
+      padding: 0 13px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: inherit;
+      font-size: 0.72rem;
+      cursor: pointer;
+    }
+
+    .presentation-controls button:hover:not(:disabled) {
+      border-color: rgba(255, 255, 255, 0.4);
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .presentation-controls button:disabled {
+      cursor: not-allowed;
+      opacity: 0.4;
+    }
+
+    .presentation-position {
+      min-width: 62px;
+      color: #e6d4ad;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.75rem;
+      text-align: center;
+      direction: ltr;
+    }
+
+    html.is-presenting {
+      scroll-padding-top: 0;
+    }
+
+    html[dir="ltr"] .detail-card {
+      right: auto;
+      left: clamp(30px, 7vw, 110px);
+    }
+
+    html[dir="ltr"] .craft-note {
+      padding: 8px 0 8px 12px;
+      border-right: 0;
+      border-left: 1px solid rgba(255, 255, 255, 0.7);
+    }
+
+    html[dir="ltr"] .marker-label {
+      right: auto;
+      left: 27px;
+      transform: translateX(-5px);
+    }
+
+    html[dir="ltr"] .room-marker:hover .marker-label,
+    html[dir="ltr"] .room-marker:focus-visible .marker-label,
+    html[dir="ltr"] .room-marker.is-selected .marker-label {
+      transform: translateX(0);
+    }
+
+    html[dir="ltr"] .journey-nav {
+      right: clamp(15px, 3vw, 42px);
+      left: auto;
+    }
+
+    html[dir="ltr"] .journey-nav a span {
+      right: auto;
+      left: 24px;
+      transform: translateY(-50%) translateX(-4px);
+    }
+
+    html[dir="ltr"] .journey-nav a:hover span,
+    html[dir="ltr"] .journey-nav a:focus-visible span {
+      transform: translateY(-50%) translateX(0);
+    }
+
+    html[dir="ltr"] .price {
+      direction: ltr;
+    }
+
+    .intro-card h1 .hero-line {
+      color: var(--ink);
+    }
+
+    body.is-presenting .site-header,
+    body.is-presenting .view-toggle,
+    body.is-presenting .pricing-disclaimer,
+    body.is-presenting .site-footer {
+      display: none;
+    }
+
+    body.is-presenting .scene {
+      min-height: 100svh;
+      scroll-margin-top: 0;
+    }
+
+    body.is-presenting .journey-nav {
+      display: none;
+    }
+
+    body.is-presenting .presentation-controls {
+      display: flex;
+    }
+
+    body.is-presenting .journey-counter {
+      bottom: 29px;
+    }
+
+    .detail-topline {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .room-label {
+      color: rgba(255, 255, 255, 0.76);
+      font-size: 0.68rem;
+    }
+
+    .product-number {
+      color: #ddc69b;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.79rem;
+      letter-spacing: 0.08em;
+      direction: ltr;
+    }
+
+    .detail-card h2,
+    .closing-card h2 {
+      margin: 17px 0 8px;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: clamp(2.2rem, 4.2vw, 3.5rem);
+      font-weight: 400;
+      letter-spacing: -0.035em;
+      line-height: 1.12;
+    }
+
+    .detail-card h2 {
+      color: #fff;
+    }
+
+    .product-subtitle {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.86);
+      font-size: 0.82rem;
+      line-height: 1.8;
+    }
+
+    .price-row {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+      margin-top: 23px;
+      padding: 16px 0;
+      border-top: 1px solid rgba(255, 255, 255, 0.34);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.34);
+    }
+
+    .price {
+      color: #f0dfb8;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.8rem;
+      direction: rtl;
+    }
+
+    .price-note {
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 0.64rem;
+    }
+
+    .product-specs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 20px;
+      margin: 19px 0 0;
+    }
+
+    .product-specs div {
+      min-width: 0;
+    }
+
+    .product-specs dt {
+      margin-bottom: 5px;
+      color: rgba(255, 255, 255, 0.68);
+      font-size: 0.65rem;
+    }
+
+    .product-specs dd {
+      margin: 0;
+      color: #fff;
+      font-size: 0.77rem;
+      line-height: 1.65;
+    }
+
+    .product-specs div:last-child {
+      grid-column: 1 / -1;
+    }
+
+    .craft-note {
+      margin: 18px 0 0;
+      padding: 8px 12px 8px 0;
+      border-right: 1px solid rgba(255, 255, 255, 0.7);
+      background: transparent;
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 0.72rem;
+      line-height: 1.8;
+    }
+
+    .scene.is-current .backdrop-wash {
+      opacity: 1;
+    }
+
+    .scene-index {
+      position: absolute;
+      bottom: 25px;
+      left: var(--gutter);
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      color: #fffefa;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.1em;
+      text-shadow: 0 1px 5px rgba(0, 0, 0, 0.4);
+      direction: ltr;
+    }
+
+    .scene-index::before {
+      width: 34px;
+      height: 1px;
+      background: currentColor;
+      content: "";
+    }
+
+    .journey-nav {
+      position: fixed;
+      z-index: 9;
+      top: 50%;
+      left: clamp(15px, 3vw, 42px);
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+      transform: translateY(-50%);
+    }
+
+    .journey-nav a {
+      position: relative;
+      display: block;
+      width: 15px;
+      height: 15px;
+      border: 1px solid rgba(255, 255, 255, 0.88);
+      border-radius: 50%;
+      background: rgba(50, 52, 44, 0.2);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.14);
+      transition: background 180ms ease, transform 180ms ease;
+    }
+
+    .journey-nav a.is-active {
+      background: var(--olive);
+      transform: scale(1.14);
+    }
+
+    .journey-nav a span {
+      position: absolute;
+      top: 50%;
+      right: 24px;
+      width: max-content;
+      padding: 5px 8px;
+      background: rgba(252, 251, 247, 0.94);
+      color: var(--ink);
+      font-size: 0.64rem;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-50%) translateX(4px);
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .journey-nav a:hover span,
+    .journey-nav a:focus-visible span {
+      opacity: 1;
+      transform: translateY(-50%) translateX(0);
+    }
+
+    .journey-counter {
+      position: fixed;
+      z-index: 9;
+      bottom: 22px;
+      right: var(--gutter);
+      padding: 9px 13px;
+      border: 1px solid rgba(255, 255, 255, 0.6);
+      background: rgba(252, 251, 247, 0.82);
+      color: #65675e;
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 0.75rem;
+      letter-spacing: 0.09em;
+      direction: ltr;
+      backdrop-filter: blur(8px);
+    }
+
+    .journey-counter strong {
+      color: var(--olive-dark);
+      font-size: 0.95rem;
+      font-weight: 400;
+    }
+
+    .closing-card {
+      width: min(100%, 540px);
+      text-align: center;
+    }
+
+    .closing-card .eyebrow {
+      justify-content: center;
+    }
+
+    .closing-card h2 {
+      font-size: clamp(2.8rem, 6vw, 4.5rem);
+    }
+
+    .closing-card > p {
+      margin-inline: auto;
+    }
+
+    .closing-card .text-link {
+      margin-top: 23px;
+    }
+
+    .pricing-disclaimer {
+      position: relative;
+      z-index: 1;
+      padding: 17px var(--gutter);
+      background: var(--paper);
+      color: #77786f;
+      font-size: 0.68rem;
+      line-height: 1.8;
+      text-align: center;
+    }
+
+    .site-footer {
+      position: relative;
+      z-index: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 24px var(--gutter);
+      border-top: 1px solid var(--line);
+      background: var(--paper);
+      color: #77786f;
+      font-size: 0.68rem;
+    }
+
+    @keyframes marker-pulse {
+      0% {
+        opacity: 0.75;
+        transform: scale(0.65);
+      }
+
+      100% {
+        opacity: 0;
+        transform: scale(1.7);
+      }
+    }
+
+    @media (max-width: 760px) {
+      :root {
+        --gutter: 19px;
+        --header-height: 68px;
+      }
+
+      .header-inner {
+        gap: 10px;
+      }
+
+      .brand-mark {
+        width: 35px;
+        height: 35px;
+      }
+
+      .brand-name {
+        font-size: 1.25rem;
+      }
+
+      .brand-caption {
+        font-size: 0.52rem;
+      }
+
+      .menu-toggle {
+        display: flex;
+      }
+
+      .main-nav {
+        position: absolute;
+        top: var(--header-height);
+        right: 0;
+        left: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0;
+        padding: 8px var(--gutter) 18px;
+        border-bottom: 1px solid var(--line);
+        background: var(--paper-light);
+        opacity: 0;
+        pointer-events: none;
+        transform: translateY(-6px);
+        transition: opacity 180ms ease, transform 180ms ease;
+      }
+
+      .main-nav.is-open {
+        opacity: 1;
+        pointer-events: auto;
+        transform: translateY(0);
+      }
+
+      .main-nav a {
+        padding: 13px 0;
+        border-bottom: 1px solid var(--line);
+      }
+
+      .header-note {
+        display: none;
+      }
+
+      .presentation-trigger,
+      .language-toggle {
+        margin-inline-start: auto;
+        min-height: 38px;
+        padding: 0 9px;
+        font-size: 0.65rem;
+      }
+
+      .header-inner {
+        gap: 7px;
+      }
+
+      .scene {
+        min-height: calc(100svh - var(--header-height));
+        padding: 26px var(--gutter) 62px;
+      }
+
+      .backdrop {
+        object-position: center;
+      }
+
+      .room-marker {
+        width: 38px;
+        height: 38px;
+      }
+
+      .marker-dot {
+        width: 15px;
+        height: 15px;
+      }
+
+      .marker-label {
+        right: 24px;
+        font-size: 0.72rem;
+      }
+
+      .view-toggle {
+        top: calc(var(--header-height) + 10px);
+        padding: 8px 10px;
+        font-size: 0.64rem;
+      }
+
+      .hotspot-layer {
+        inset: 0;
+      }
+
+      .scene-inner {
+        justify-content: center !important;
+        align-items: flex-end;
+        padding-bottom: 20px;
+      }
+
+      .intro-card,
+      .closing-card {
+        width: min(100%, 470px);
+        padding: 24px;
+      }
+
+      .detail-card {
+        top: auto;
+        right: 23px;
+        bottom: 76px;
+        left: 23px;
+        width: auto;
+        max-height: 43%;
+        padding: 5px 0;
+      }
+
+      html[dir="ltr"] .detail-card {
+        right: 23px;
+        left: 23px;
+      }
+
+      html[dir="ltr"] .journey-nav {
+        right: auto;
+        left: 50%;
+      }
+
+      .intro-card {
+        padding: 29px 25px;
+      }
+
+      .presentation-launch {
+        width: 100%;
+        margin-top: 16px;
+      }
+
+      .intro-card h1 {
+        margin-top: 15px;
+        font-size: clamp(2.7rem, 12vw, 4.2rem);
+      }
+
+      .intro-card > p,
+      .closing-card > p {
+        font-size: 0.83rem;
+      }
+
+      .entry-note {
+        margin-top: 25px;
+      }
+
+      .detail-card h2 {
+        font-size: clamp(2.1rem, 10vw, 3rem);
+      }
+
+      .detail-card .price-row {
+        gap: 8px;
+        margin-top: 12px;
+        padding-block: 9px;
+      }
+
+      .detail-card .price {
+        font-size: 1.45rem;
+      }
+
+      .product-specs {
+        gap: 9px 12px;
+        margin-top: 12px;
+      }
+
+      .product-specs dt {
+        margin-bottom: 2px;
+        font-size: 0.59rem;
+      }
+
+      .product-specs dd {
+        font-size: 0.68rem;
+      }
+
+      .craft-note {
+        margin-top: 10px;
+        font-size: 0.65rem;
+      }
+
+      .journey-nav {
+        top: auto;
+        bottom: 23px;
+        left: 50%;
+        flex-direction: row;
+        gap: 9px;
+        transform: translateX(-50%);
+      }
+
+      .journey-nav a {
+        width: 12px;
+        height: 12px;
+      }
+
+      .journey-nav a span {
+        display: none;
+      }
+
+      .journey-counter {
+        right: 13px;
+        bottom: 15px;
+        padding: 7px 9px;
+        font-size: 0.66rem;
+      }
+
+      .presentation-controls {
+        bottom: 12px;
+        gap: 2px;
+        padding: 5px;
+      }
+
+      .presentation-controls button {
+        min-height: 35px;
+        padding-inline: 9px;
+        font-size: 0.65rem;
+      }
+
+      .presentation-position {
+        min-width: 47px;
+        font-size: 0.68rem;
+      }
+
+      body.is-presenting .journey-counter {
+        right: 10px;
+        bottom: 63px;
+      }
+
+      .scene-index {
+        bottom: 21px;
+        left: 17px;
+        font-size: 0.65rem;
+      }
+
+      .pricing-disclaimer {
+        padding-bottom: 25px;
+      }
+
+      .site-footer {
+        flex-direction: column;
+        gap: 8px;
+        text-align: center;
+      }
+    }
+
+    @media (max-height: 680px) and (min-width: 761px) {
+      .scene {
+        padding-block: 20px 44px;
+      }
+
+      .detail-card {
+        padding: 24px 30px;
+      }
+
+      .price-row {
+        margin-top: 14px;
+        padding-block: 11px;
+      }
+
+      .product-specs {
+        gap: 11px 18px;
+        margin-top: 13px;
+      }
+
+      .craft-note {
+        margin-top: 12px;
+        padding-block: 8px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *,
+      *::before,
+      *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+      }
+
+      html {
+        scroll-snap-type: y proximity;
+      }
+
+      .backdrop {
+        transform: none;
+      }
+
+      .view-toggle,
+      .room-marker,
+      .hotspot-layer,
+      .detail-card {
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="backdrops" aria-hidden="true">
+    <img class="backdrop is-active" data-backdrop="0" src="showroom-hero.jpg" alt="" fetchpriority="high">
+    <img class="backdrop" data-backdrop="1" src="living-room.jpg" alt="">
+    <img class="backdrop" data-backdrop="2" src="dining-room.jpg" alt="">
+    <img class="backdrop" data-backdrop="3" src="material-detail.jpg" alt="">
+    <img class="backdrop" data-backdrop="4" src="lounge.jpg" alt="">
+    <img class="backdrop" data-backdrop="5" src="material-detail.jpg" alt="">
+    <img class="backdrop" data-backdrop="6" src="showroom-gallery.jpg" alt="">
+    <div class="backdrop-wash"></div>
+  </div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#home" aria-label="ASAS — Home">
+        <span class="brand-mark" aria-hidden="true" data-i18n="brandMark">A</span>
+        <span>
+          <span class="brand-name" data-i18n="brandName">ASAS</span>
+          <span class="brand-caption" data-i18n="brandCaption">Furniture for the details of life</span>
+        </span>
+      </a>
+      <button class="menu-toggle" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="main-nav">
+        <span aria-hidden="true"></span>
+      </button>
+      <nav class="main-nav" id="main-nav" aria-label="Navigate the rooms">
+        <a href="#living" data-i18n="navLiving">Living</a>
+        <a href="#lounge" data-i18n="navLounge">Lounge</a>
+        <a href="#dining" data-i18n="navDining">Dining</a>
+        <a href="#bedroom" data-i18n="navBedroom">Bedroom</a>
+        <a href="#craft" data-i18n="navCraft">Craft</a>
+      </nav>
+      <button class="language-toggle" type="button" aria-label="Switch to Arabic">العربية</button>
+      <button class="presentation-trigger" type="button" data-presentation-open aria-pressed="false">
+        <span class="presentation-icon" aria-hidden="true">▶</span>
+        <span data-i18n="headerPresentation">Present</span>
+      </button>
+      <span class="header-note" data-i18n="headerNote">AN APARTMENT, BY ASAS</span>
+    </div>
+  </header>
+
+  <button class="view-toggle" type="button" aria-pressed="false" aria-label="Enable first-person view">
+    <span class="view-toggle-indicator" aria-hidden="true"></span>
+    <span data-view-label>First-person view · Off</span>
+  </button>
+
+  <nav class="journey-nav" aria-label="Home tour scenes">
+    <a class="is-active" href="#home" aria-label="Home entrance" aria-current="step"><span>Home entrance</span></a>
+    <a href="#living" aria-label="Living room"><span>Living room</span></a>
+    <a href="#lounge" aria-label="Lounge"><span>Lounge</span></a>
+    <a href="#dining" aria-label="Dining room"><span>Dining room</span></a>
+    <a href="#bedroom" aria-label="Bedroom"><span>Bedroom</span></a>
+    <a href="#craft" aria-label="Craft details"><span>Craft details</span></a>
+    <a href="#visit" aria-label="End of tour"><span>End of tour</span></a>
+  </nav>
+
+  <div class="journey-counter" aria-live="polite"><strong>01</strong> / 07</div>
+  <div class="presentation-controls" role="group" aria-label="Presentation controls">
+    <button type="button" data-presentation-prev aria-label="Previous scene">Previous</button>
+    <span class="presentation-position" data-presentation-position aria-live="polite">01 / 07</span>
+    <button type="button" data-presentation-next aria-label="Next scene">Next</button>
+    <button type="button" data-presentation-close aria-label="End presentation">End presentation <span aria-hidden="true">×</span></button>
+  </div>
+
+  <main>
+    <section class="scene scene--welcome" id="home" data-scene="0" aria-labelledby="welcome-title">
+      <div class="scene-inner">
+        <div class="intro-card">
+          <span class="eyebrow" data-i18n="homeEyebrow">Welcome to an ASAS home</span>
+          <h1 id="welcome-title"><span class="hero-line" data-i18n="homeTitleFirst">The door is open...</span><br><span class="hero-highlight" data-i18n="homeTitleSecond">Come on in.</span></h1>
+          <p data-i18n="homeDescription">We'll move from the entry into the living room, past the open kitchen and dining table. Then we'll get closer to each piece and discover its story.</p>
+          <a class="text-link" href="#living"><span data-i18n="enterHome">Step inside</span> <span aria-hidden="true">←</span></a>
+          <button class="presentation-launch" type="button" data-presentation-open data-presentation-start>
+            <span class="presentation-icon" aria-hidden="true">▶</span>
+            <span data-i18n="launchPresentation">Explore the presentation</span>
+          </button>
+          <span class="entry-note" data-i18n="entryNote">A room-by-room journey · Scroll to continue</span>
+        </div>
+      </div>
+      <span class="scene-index">01 — 07</span>
+    </section>
+
+    <section class="scene scene--product" id="living" data-scene="1" aria-labelledby="living-title">
+      <div class="scene-inner">
+        <article class="detail-card" aria-live="polite" aria-atomic="true">
+          <div class="detail-topline"><span class="room-label" data-i18n="roomLiving">1 · Open-plan living</span><span class="product-number">AS / 001</span></div>
+          <h2 id="living-title">Sakina Sofa</h2>
+          <p class="product-subtitle">A spacious linen sofa and a close-by table make the open-plan heart of the home.</p>
+          <div class="price-row"><span class="price">$780</span><span class="price-note">Illustrative price · set</span></div>
+          <dl class="product-specs">
+            <div><dt>الخامة</dt><dd>كتان عملي ناعم الملمس</dd></div>
+            <div><dt>الهيكل</dt><dd>خشب زان مجفف ومعالج</dd></div>
+            <div><dt>المقاس</dt><dd>عرض ٢٨٠ × عمق ٩٥ سم</dd></div>
+            <div><dt>التنجيد</dt><dd>إسفنج عالي الكثافة</dd></div>
+            <div><dt>بلد الصنع</dt><dd data-product-origin>مصر · نموذج توضيحي</dd></div>
+          </dl>
+          <p class="craft-note">A sturdy wood frame, balanced comfort layers, and careful upholstery make every stitch count.</p>
+        </article>
+      </div>
+      <div class="hotspot-layer" aria-label="Living room furniture"></div>
+      <span class="scene-index">02 — 07</span>
+    </section>
+
+    <section class="scene scene--product" id="lounge" data-scene="2" aria-labelledby="lounge-title">
+      <div class="scene-inner">
+        <article class="detail-card" aria-live="polite" aria-atomic="true">
+          <div class="detail-topline"><span class="room-label" data-i18n="roomLounge">2 · Lounge</span><span class="product-number">AS / 014</span></div>
+          <h2 id="lounge-title">Athar Coffee Table</h2>
+          <p class="product-subtitle">A simple detail for books, coffee, and the moments in between.</p>
+          <div class="price-row"><span class="price">$250</span><span class="price-note">Illustrative price · item</span></div>
+          <dl class="product-specs">
+            <div><dt>سطح الطاولة</dt><dd>قشرة بلوط طبيعية</dd></div>
+            <div><dt>القاعدة</dt><dd>خشب زان صلب</dd></div>
+            <div><dt>المقاس</dt><dd>قطر ٨٠ × ارتفاع ٤٢ سم</dd></div>
+            <div><dt>التشطيب</dt><dd>زيت طبيعي مطفأ</dd></div>
+            <div><dt>بلد الصنع</dt><dd data-product-origin>مصر · نموذج توضيحي</dd></div>
+          </dl>
+          <p class="craft-note">The grain is carefully selected, and edges are hand-sanded before a protective finish is applied.</p>
+        </article>
+      </div>
+      <div class="hotspot-layer" aria-label="Lounge furniture"></div>
+      <span class="scene-index">03 — 07</span>
+    </section>
+
+    <section class="scene scene--product" id="dining" data-scene="3" aria-labelledby="dining-title">
+      <div class="scene-inner">
+        <article class="detail-card" aria-live="polite" aria-atomic="true">
+          <div class="detail-topline"><span class="room-label" data-i18n="roomDining">3 · Dining room</span><span class="product-number">AS / 023</span></div>
+          <h2 id="dining-title">Lamma Dining Table</h2>
+          <p class="product-subtitle">Room for every story, and enough space for the people you love.</p>
+          <div class="price-row"><span class="price">$700</span><span class="price-note">Illustrative price · table</span></div>
+          <dl class="product-specs">
+            <div><dt>الخامة</dt><dd>سطح بلوط طبيعي</dd></div>
+            <div><dt>الهيكل</dt><dd>زان صلب بتجميع متين</dd></div>
+            <div><dt>المقاس</dt><dd>١٨٠ × ٩٠ × ٧٥ سم</dd></div>
+            <div><dt>السعة</dt><dd>٦ كراسي مريحة</dd></div>
+            <div><dt>بلد الصنع</dt><dd data-product-origin>مصر · نموذج توضيحي</dd></div>
+          </dl>
+          <p class="craft-note">Thoughtful leg angles distribute weight evenly, while a protective finish stands up to everyday use.</p>
+        </article>
+      </div>
+      <div class="hotspot-layer" aria-label="Dining room furniture"></div>
+      <span class="scene-index">04 — 07</span>
+    </section>
+
+    <section class="scene scene--product" id="bedroom" data-scene="4" aria-labelledby="bedroom-title">
+      <div class="scene-inner">
+        <article class="detail-card" aria-live="polite" aria-atomic="true">
+          <div class="detail-topline"><span class="room-label" data-i18n="roomBedroom">4 · Bedroom</span><span class="product-number">AS / 031</span></div>
+          <h2 id="bedroom-title">Hodoo Bed</h2>
+          <p class="product-subtitle">A calmer start to the day, and a softer place to end it.</p>
+          <div class="price-row"><span class="price">$850</span><span class="price-note">Illustrative price · frame</span></div>
+          <dl class="product-specs">
+            <div><dt>الخامة</dt><dd>خشب زان طبيعي</dd></div>
+            <div><dt>التنجيد</dt><dd>قماش كتاني هادئ</dd></div>
+            <div><dt>المقاس</dt><dd>١٨٠ × ٢٠٠ سم</dd></div>
+            <div><dt>القاعدة</dt><dd>شرائح دعم متينة</dd></div>
+            <div><dt>بلد الصنع</dt><dd data-product-origin>مصر · نموذج توضيحي</dd></div>
+          </dl>
+          <p class="craft-note">A layered upholstered headboard and reinforced beech frame offer lasting, steady support.</p>
+        </article>
+      </div>
+      <div class="hotspot-layer" aria-label="Bedroom furniture"></div>
+      <span class="scene-index">05 — 07</span>
+    </section>
+
+    <section class="scene scene--product" id="craft" data-scene="5" aria-labelledby="craft-title">
+      <div class="scene-inner">
+        <article class="detail-card" aria-live="polite" aria-atomic="true">
+          <div class="detail-topline"><span class="room-label" data-i18n="roomCraft">5 · A closer look at the dining table</span><span class="product-number">AS / MADE</span></div>
+          <h2 id="craft-title">Made to<br>be touched</h2>
+          <p class="product-subtitle">A closer look at the table's oak grain and hand-finished surface.</p>
+          <div class="price-row"><span class="price">Built to last</span><span class="price-note">It starts with the right materials</span></div>
+          <dl class="product-specs">
+            <div><dt>اختيار الخشب</dt><dd>فحص واستقرار قبل التصنيع</dd></div>
+            <div><dt>تجهيز الهيكل</dt><dd>قص وتجميع مضبوط للمقاسات</dd></div>
+            <div><dt>طبقات الراحة</dt><dd>دعم متوازن للاستخدام اليومي</dd></div>
+            <div><dt>اللمسة الأخيرة</dt><dd>تنجيد وتشطيب ومراجعة</dd></div>
+            <div><dt>بلد الصنع</dt><dd data-product-origin>مصر · نموذج توضيحي</dd></div>
+          </dl>
+          <p class="craft-note">We care about what you see, and the hidden details that make a difference every day.</p>
+        </article>
+      </div>
+      <div class="hotspot-layer" aria-label="Furniture and material details"></div>
+      <span class="scene-index">06 — 07</span>
+    </section>
+
+    <section class="scene scene--welcome" id="visit" data-scene="6" aria-labelledby="visit-title">
+      <div class="scene-inner">
+        <div class="closing-card">
+          <span class="eyebrow" data-i18n="closingEyebrow">The tour ends. Your story begins.</span>
+          <h2 id="visit-title"><span data-i18n="closingTitleFirst">A home is more than</span><br><span data-i18n="closingTitleSecond">furniture. It's a feeling.</span></h2>
+          <p data-i18n="closingDescription">Prices and specifications are illustrative. Visit the ASAS showroom, experience the materials in person, and find the piece that feels like home.</p>
+          <a class="text-link" href="#home"><span data-i18n="restartTour">Start the tour again</span> <span aria-hidden="true">↶</span></a>
+        </div>
+      </div>
+      <span class="scene-index">07 — 07</span>
+    </section>
+  </main>
+
+  <p class="pricing-disclaimer" data-i18n="pricingDisclaimer">Prices are illustrative USD examples, not live currency conversions or verified showroom product data. Dimensions, materials, and country-of-origin details are examples too.</p>
+
+  <footer class="site-footer">
+    <a class="brand" href="#home" aria-label="ASAS — Back to start">
+      <span class="brand-mark" aria-hidden="true" data-i18n="brandMark">A</span>
+      <span>
+        <span class="brand-name" data-i18n="brandName">ASAS</span>
+        <span class="brand-caption" data-i18n="brandCaption">Furniture for the details of life</span>
+      </span>
+    </a>
+    <span data-i18n="footerNote">A room-by-room tour of ASAS · 2026</span>
+  </footer>
+
+  <script>
+    const scenes = [...document.querySelectorAll('.scene')];
+    const backdrops = [...document.querySelectorAll('.backdrop')];
+    const journeyLinks = [...document.querySelectorAll('.journey-nav a')];
+    const counter = document.querySelector('.journey-counter strong');
+    const menuToggle = document.querySelector('.menu-toggle');
+    const mainNav = document.querySelector('.main-nav');
+    const viewToggle = document.querySelector('.view-toggle');
+    const viewLabel = document.querySelector('[data-view-label]');
+    const languageToggle = document.querySelector('.language-toggle');
+    const presentationOpeners = [...document.querySelectorAll('[data-presentation-open]')];
+    const presentationPrevious = document.querySelector('[data-presentation-prev]');
+    const presentationNext = document.querySelector('[data-presentation-next]');
+    const presentationPosition = document.querySelector('[data-presentation-position]');
+    const presentationClose = document.querySelector('[data-presentation-close]');
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let activeSceneIndex = -1;
+    let cameraFrame = 0;
+    let pointerX = 0;
+    let pointerY = 0;
+    let firstPersonEnabled = false;
+    let detailPlacementTimer = 0;
+    const sceneTranslationKeys = ['homeScene', 'livingScene', 'loungeScene', 'diningScene', 'bedroomScene', 'craftScene', 'visitScene'];
+    const hotspotTranslationKeys = {
+      living: 'livingHotspots',
+      lounge: 'loungeHotspots',
+      dining: 'diningHotspots',
+      bedroom: 'bedroomHotspots',
+      craft: 'craftHotspots'
+    };
+
+    const productCatalog = {
+      living: [
+        {
+          id: 'sofa',
+          name: 'كنبة «سَكينة»',
+          sku: 'AS / 001',
+          price: '$780',
+          priceNote: 'سعر استرشادي · الطقم',
+          description: 'كنبة واسعة من الكتان بوسائد مريحة، لتكون أول محطة في صالون البيت.',
+          specs: [['الخامة', 'كتان عملي ناعم الملمس'], ['الهيكل', 'خشب زان مجفف ومعالج'], ['المقاس', 'عرض ٢٨٠ × عمق ٩٥ سم'], ['التنجيد', 'إسفنج عالي الكثافة']],
+          note: 'هيكل زان ثابت، طبقات راحة متوازنة، وتنجيد يدوي يهتم بكل غرزة.',
+          x: 0.35, y: 0.74
+        },
+        {
+          id: 'living-table',
+          name: 'طاولة «مَدى»',
+          sku: 'AS / 008',
+          price: '$240',
+          priceNote: 'سعر استرشادي · القطعة',
+          description: 'طاولة قهوة منخفضة تجمع الجلسة وتترك مساحة واسعة للحركة حولها.',
+          specs: [['السطح', 'قشرة بلوط طبيعية'], ['القاعدة', 'خشب زان صلب'], ['المقاس', '١١٠ × ٦٠ × ٤٢ سم'], ['التشطيب', 'زيت مطفأ مقاوم للاستخدام']],
+          note: 'حواف مستديرة وتشطيب يدوي يبرز عروق الخشب.',
+          x: 0.50, y: 0.66
+        },
+        {
+          id: 'living-side-table',
+          name: 'طاولة جانبية «رِواق»',
+          sku: 'AS / 009',
+          price: '$200',
+          priceNote: 'سعر استرشادي · القطعة',
+          description: 'طاولة جانبية قريبة من جلسة الصالون، لمساحة صغيرة للأشياء اللي بتحبها جنبك.',
+          specs: [['السطح', 'قشرة بلوط طبيعية'], ['الهيكل', 'خشب زان طبيعي'], ['المقاس', '٥٠ × ٤٥ × ٥٥ سم'], ['التشطيب', 'زيت طبيعي مطفأ']],
+          note: 'حواف ناعمة وتشطيب عملي يبرز عروق الخشب.',
+          x: 0.66, y: 0.70
+        },
+        {
+          id: 'kitchen-stools',
+          name: 'كراسي «جزيرة»',
+          sku: 'AS / 012',
+          price: '$125',
+          priceNote: 'سعر استرشادي · الكرسي',
+          description: 'كراسي مرتفعة عند رخامة المطبخ المفتوح، لفطار سريع وقعدة قريبة.',
+          specs: [['المقعد', 'خشب بلوط طبيعي'], ['الهيكل', 'زان بتدعيم متقاطع'], ['الارتفاع', '٦٧ سم للمقعد'], ['التشطيب', 'طبقة حماية مطفأة']],
+          note: 'قاعدة قدم مريحة وتصميم ثابت للاستخدام اليومي.',
+          x: 0.59, y: 0.58
+        }
+      ],
+      lounge: [
+        {
+          id: 'coffee-table',
+          name: 'طاولة «أثر»',
+          sku: 'AS / 014',
+          price: '$250',
+          priceNote: 'سعر استرشادي · القطعة',
+          description: 'تفصيلة بسيطة تجمع الكتب والقهوة واللحظات الحلوة في ركن الجلوس.',
+          specs: [['سطح الطاولة', 'قشرة بلوط طبيعية'], ['القاعدة', 'خشب زان صلب'], ['المقاس', 'قطر ٨٠ × ارتفاع ٤٢ سم'], ['التشطيب', 'زيت طبيعي مطفأ']],
+          note: 'تُختار عروق الخشب بعناية، وتُصنفر الحواف يدويًا قبل طبقة الحماية.',
+          x: 0.55, y: 0.81
+        },
+        {
+          id: 'lounge-sofa',
+          name: 'كنبة «مَرفأ»',
+          sku: 'AS / 015',
+          price: '$730',
+          priceNote: 'سعر استرشادي · الطقم',
+          description: 'كنبة عائلية واسعة بألوان هادئة، مواجهة للمطبخ المفتوح.',
+          specs: [['القماش', 'كتان مخلوط متين'], ['الهيكل', 'خشب زان مجفف'], ['المقاس', '٢٦٠ × ٩٢ سم'], ['التنجيد', 'إسفنج متعدد الطبقات']],
+          note: 'مقعد عميق ووسائد قابلة للفك لتسهيل العناية.',
+          x: 0.60, y: 0.68
+        },
+        {
+          id: 'lounge-chair',
+          name: 'كرسي «سُكون»',
+          sku: 'AS / 016',
+          price: '$210',
+          priceNote: 'سعر استرشادي · القطعة',
+          description: 'كرسي قراءة مستقل بظهر مائل ومسندين مريحين.',
+          specs: [['التنجيد', 'قماش ناعم ملمسًا'], ['الهيكل', 'زان صلب'], ['المقاس', '٧٦ × ٨٢ سم'], ['الأرجل', 'خشب بتشطيب طبيعي']],
+          note: 'تجميع متين وحواف مصقولة يدويًا.',
+          x: 0.88, y: 0.76
+        }
+      ],
+      dining: [
+        {
+          id: 'dining-table',
+          name: 'سفرة «لَمّة»',
+          sku: 'AS / 023',
+          price: '$700',
+          priceNote: 'سعر استرشادي · السفرة',
+          description: 'طاولة تجمع الناس حولها، بمساحة مناسبة لستة كراسي.',
+          specs: [['الخامة', 'سطح بلوط طبيعي'], ['الهيكل', 'زان صلب بتجميع متين'], ['المقاس', '١٨٠ × ٩٠ × ٧٥ سم'], ['السعة', '٦ كراسي مريحة']],
+          note: 'أرجل متوازنة وسطح محمي للاستخدام اليومي.',
+          x: 0.45, y: 0.78
+        },
+        {
+          id: 'dining-chair',
+          name: 'كرسي «أُنس»',
+          sku: 'AS / 024',
+          price: '$100',
+          priceNote: 'سعر استرشادي · الكرسي',
+          description: 'كرسي سفرة مبطن يجمع قعدة مريحة وخطوطًا خفيفة.',
+          specs: [['القماش', 'نسيج عملي سهل التنظيف'], ['الهيكل', 'خشب زان طبيعي'], ['المقاس', '٤٨ × ٥٢ × ٨٤ سم'], ['المقعد', 'إسفنج مرن']],
+          note: 'وصلات متينة وطبقة حماية على الأرجل.',
+          x: 0.29, y: 0.78
+        },
+        {
+          id: 'dining-sideboard',
+          name: 'وحدة تخزين «سَرد»',
+          sku: 'AS / 026',
+          price: '$540',
+          priceNote: 'سعر استرشادي · القطعة',
+          description: 'وحدة تخزين أنيقة قريبة من السفرة، تحفظ الأدوات وتبقي السطح مرتبًا.',
+          specs: [['الأبواب', 'قشرة بلوط طبيعية'], ['الهيكل', 'خشب مصنّع معتمد'], ['المقاس', '١٦٠ × ٤٢ × ٨٠ سم'], ['الإغلاق', 'مفصلات هادئة']],
+          note: 'تقسيم داخلي عملي وتشطيب مطفأ.',
+          x: 0.55, y: 0.39
+        }
+      ],
+      bedroom: [
+        {
+          id: 'bed',
+          name: 'سرير «هَدوء»',
+          sku: 'AS / 031',
+          price: '$850',
+          priceNote: 'سعر استرشادي · الهيكل',
+          description: 'سرير بتنجيد كتاني هادئ، لبداية يوم أريح ونهايته.',
+          specs: [['الخامة', 'خشب زان طبيعي'], ['التنجيد', 'قماش كتاني هادئ'], ['المقاس', '١٨٠ × ٢٠٠ سم'], ['القاعدة', 'شرائح دعم متينة']],
+          note: 'رأس مبطن وهيكل مُثبت لتقليل الحركة وتوفير دعم يدوم.',
+          x: 0.42, y: 0.72
+        },
+        {
+          id: 'bedside',
+          name: 'كومود «ليل»',
+          sku: 'AS / 033',
+          price: '$115',
+          priceNote: 'سعر استرشادي · القطعة',
+          description: 'طاولة جانبية صغيرة بجوار السرير، للأشياء اللي بتحبها قريبة.',
+          specs: [['السطح', 'قشرة بلوط طبيعية'], ['الهيكل', 'خشب زان'], ['المقاس', '٤٥ × ٤٠ × ٥٠ سم'], ['التخزين', 'درج بإغلاق هادئ']],
+          note: 'حواف ناعمة وتشطيب يحافظ على ملمس الخشب.',
+          x: 0.08, y: 0.80
+        },
+        {
+          id: 'bedroom-chair',
+          name: 'كرسي «صَحو»',
+          sku: 'AS / 035',
+          price: '$180',
+          priceNote: 'سعر استرشادي · القطعة',
+          description: 'كرسي جانبي صغير يكمل زاوية هادئة قرب النافذة.',
+          specs: [['القماش', 'كتان بلون طبيعي'], ['الهيكل', 'زان صلب'], ['المقاس', '٧٠ × ٧٦ سم'], ['التنجيد', 'إسفنج عالي المرونة']],
+          note: 'وزن خفيف وقاعدة ثابتة للاستخدام اليومي.',
+          x: 0.90, y: 0.82
+        }
+      ],
+      craft: [
+        {
+          id: 'wood-finish',
+          name: 'سطح «أثر» الخشبي',
+          sku: 'AS / MADE',
+          price: 'ضمن سعر الطاولة',
+          priceNote: 'تفصيلة في قطعة الأثاث',
+          description: 'نقرب من سطح طاولة السفرة عشان نشوف عروق البلوط والتشطيب.',
+          specs: [['الخامة', 'قشرة بلوط طبيعية'], ['المعالجة', 'صنفرة على مراحل'], ['التشطيب', 'زيت طبيعي مطفأ'], ['العناية', 'مسح بقطعة قماش ناعمة']],
+          note: 'كل عرق في الخشب له شكل مختلف، والتشطيب يحافظ على ملمسه الطبيعي.',
+          x: 0.45, y: 0.76
+        },
+        {
+          id: 'joinery',
+          name: 'وصلات كرسي «أُنس»',
+          sku: 'AS / JOINERY',
+          price: 'ضمن سعر الكرسي',
+          priceNote: 'تفصيلة في قطعة الأثاث',
+          description: 'نظرة قريبة على الوصلات الخشبية اللي تثبّت هيكل الكرسي.',
+          specs: [['الخشب', 'زان طبيعي'], ['التجميع', 'وصلات مدعّمة'], ['الصنفرة', 'حواف ناعمة باليد'], ['الفحص', 'ثبات الهيكل قبل التنجيد']],
+          note: 'متانة القطعة بتبدأ من هيكل مضبوط قبل ما يظهر أي قماش.',
+          x: 0.30, y: 0.80
+        },
+        {
+          id: 'upholstery',
+          name: 'تنجيد «سَكينة»',
+          sku: 'AS / UPHOLSTERY',
+          price: 'ضمن سعر الكنبة',
+          priceNote: 'تفصيلة في قطعة الأثاث',
+          description: 'طبقات قماش وإسفنج تتجمع لتوازن بين الراحة والثبات.',
+          specs: [['القماش', 'كتان عملي'], ['الدعم', 'إسفنج عالي الكثافة'], ['التنفيذ', 'قص وتنجيد مضبوط'], ['الفحص', 'مراجعة الخياطة والحواف']],
+          note: 'التنجيد اليدوي يكمّل الهيكل ويعطي كل قطعة إحساسها الخاص.',
+          x: 0.84, y: 0.67
+        }
+      ]
+    };
+
+    const englishProductCopy = {
+      sofa: {
+        name: 'Sakina Sofa',
+        priceNote: 'Illustrative price · set',
+        description: 'A generous linen sofa with comfortable cushions—the welcoming centerpiece of the living room.',
+        specs: [['Fabric', 'Soft, practical linen'], ['Frame', 'Kiln-dried beechwood'], ['Size', 'W 280 × D 95 cm'], ['Upholstery', 'High-density foam']],
+        note: 'A sturdy beech frame, balanced comfort layers, and careful upholstery make every stitch count.'
+      },
+      'living-table': {
+        name: 'Mada Coffee Table',
+        priceNote: 'Illustrative price · item',
+        description: 'A low coffee table that brings the seating together and leaves room to move.',
+        specs: [['Top', 'Natural oak veneer'], ['Base', 'Solid beechwood'], ['Size', '110 × 60 × 42 cm'], ['Finish', 'Protective matte oil']],
+        note: 'Rounded edges and a hand-applied finish bring out the natural grain.'
+      },
+      'living-side-table': {
+        name: 'Riwaq Side Table',
+        priceNote: 'Illustrative price · item',
+        description: 'A compact side table beside the seating, keeping everyday essentials within reach.',
+        specs: [['Top', 'Natural oak veneer'], ['Frame', 'Natural beechwood'], ['Size', '50 × 45 × 55 cm'], ['Finish', 'Natural matte oil']],
+        note: 'Soft edges and a practical finish bring out the natural wood grain.'
+      },
+      'kitchen-stools': {
+        name: 'Jazeera Counter Stools',
+        priceNote: 'Illustrative price · stool',
+        description: 'Counter-height seats by the open kitchen island, made for a quick breakfast or a catch-up.',
+        specs: [['Seat', 'Natural oak'], ['Frame', 'Braced beechwood'], ['Height', '67 cm seat height'], ['Finish', 'Protective matte coat']],
+        note: 'A comfortable footrest and a steady frame for everyday use.'
+      },
+      'coffee-table': {
+        name: 'Athar Coffee Table',
+        priceNote: 'Illustrative price · item',
+        description: 'A simple detail for books, coffee, and the moments in between.',
+        specs: [['Tabletop', 'Natural oak veneer'], ['Base', 'Solid beechwood'], ['Size', 'Ø 80 × H 42 cm'], ['Finish', 'Natural matte oil']],
+        note: 'The grain is carefully selected, and edges are hand-sanded before a protective finish is applied.'
+      },
+      'lounge-sofa': {
+        name: 'Marfa Sofa',
+        priceNote: 'Illustrative price · set',
+        description: 'A generous family sofa in calm tones, facing the open kitchen.',
+        specs: [['Fabric', 'Durable linen blend'], ['Frame', 'Kiln-dried beechwood'], ['Size', '260 × 92 cm'], ['Upholstery', 'Multi-layer foam']],
+        note: 'A deep seat and removable cushions make everyday care simple.'
+      },
+      'lounge-chair': {
+        name: 'Sukoon Reading Chair',
+        priceNote: 'Illustrative price · item',
+        description: 'A dedicated reading chair with a gently reclined back and comfortable arms.',
+        specs: [['Upholstery', 'Soft-touch fabric'], ['Frame', 'Solid beechwood'], ['Size', '76 × 82 cm'], ['Legs', 'Naturally finished wood']],
+        note: 'Strong joinery and hand-smoothed edges complete the chair.'
+      },
+      'dining-table': {
+        name: 'Lamma Dining Table',
+        priceNote: 'Illustrative price · table',
+        description: 'A table made for gathering, with room for six chairs.',
+        specs: [['Material', 'Natural oak top'], ['Frame', 'Solid beech, reinforced joinery'], ['Size', '180 × 90 × 75 cm'], ['Capacity', 'Seats 6']],
+        note: 'Balanced legs and a protected surface are made for everyday meals.'
+      },
+      'dining-chair': {
+        name: 'Ons Dining Chair',
+        priceNote: 'Illustrative price · chair',
+        description: 'An upholstered dining chair with a comfortable seat and a light silhouette.',
+        specs: [['Fabric', 'Easy-clean woven textile'], ['Frame', 'Natural beechwood'], ['Size', '48 × 52 × 84 cm'], ['Seat', 'Resilient foam']],
+        note: 'Durable joinery and a protective finish on the legs.'
+      },
+      'dining-sideboard': {
+        name: 'Sard Storage Cabinet',
+        priceNote: 'Illustrative price · item',
+        description: 'A refined cabinet near the dining area, keeping essentials close and the tabletop clear.',
+        specs: [['Doors', 'Natural oak veneer'], ['Frame', 'Certified engineered wood'], ['Size', '160 × 42 × 80 cm'], ['Close', 'Soft-close hinges']],
+        note: 'Practical interior storage with a muted matte finish.'
+      },
+      bed: {
+        name: 'Hodoo Bed',
+        priceNote: 'Illustrative price · frame',
+        description: 'A calm linen-upholstered bed for a softer start and end to every day.',
+        specs: [['Material', 'Natural beechwood'], ['Upholstery', 'Soft linen fabric'], ['Size', '180 × 200 cm'], ['Base', 'Durable support slats']],
+        note: 'A layered upholstered headboard and reinforced frame offer lasting, steady support.'
+      },
+      bedside: {
+        name: 'Leil Bedside Table',
+        priceNote: 'Illustrative price · item',
+        description: 'A compact bedside table for the things you like to keep close.',
+        specs: [['Top', 'Natural oak veneer'], ['Frame', 'Beechwood'], ['Size', '45 × 40 × 50 cm'], ['Storage', 'Soft-close drawer']],
+        note: 'Soft edges and a finish that preserves the feel of the wood.'
+      },
+      'bedroom-chair': {
+        name: 'Sahw Bedroom Chair',
+        priceNote: 'Illustrative price · item',
+        description: 'A compact accent chair for a quiet corner by the window.',
+        specs: [['Fabric', 'Natural-tone linen'], ['Frame', 'Solid beechwood'], ['Size', '70 × 76 cm'], ['Upholstery', 'High-resilience foam']],
+        note: 'Lightweight, with a stable base for everyday use.'
+      },
+      'wood-finish': {
+        name: 'Athar Oak Tabletop',
+        price: 'Included with table',
+        priceNote: 'Craft detail · part of the table',
+        description: 'A close look at the oak grain and hand-finished tabletop.',
+        specs: [['Material', 'Natural oak veneer'], ['Preparation', 'Multi-stage sanding'], ['Finish', 'Natural matte oil'], ['Care', 'Wipe with a soft cloth']],
+        note: 'Every grain is unique; the finish preserves the wood’s natural feel.'
+      },
+      joinery: {
+        name: 'Ons Chair Joinery',
+        price: 'Included with chair',
+        priceNote: 'Craft detail · part of the chair',
+        description: 'A closer look at the wood joints that hold the chair frame together.',
+        specs: [['Wood', 'Natural beech'], ['Assembly', 'Reinforced joints'], ['Sanding', 'Hand-smoothed edges'], ['Quality check', 'Frame tested before upholstery']],
+        note: 'Lasting strength starts with a well-built frame, long before the fabric is added.'
+      },
+      upholstery: {
+        name: 'Sakina Sofa Upholstery',
+        price: 'Included with sofa',
+        priceNote: 'Craft detail · part of the sofa',
+        description: 'Layers of fabric and foam come together for lasting comfort and support.',
+        specs: [['Fabric', 'Practical linen'], ['Support', 'High-density foam'], ['Construction', 'Precisely cut and upholstered'], ['Quality check', 'Seams and edges reviewed']],
+        note: 'Hand-finished upholstery completes the frame and gives each piece its own character.'
+      }
+    };
+
+    const uiTranslations = {
+      en: {
+        brandMark: 'A', brandName: 'ASAS', brandCaption: 'Furniture for the details of life',
+        navLiving: 'Living', navLounge: 'Lounge', navDining: 'Dining', navBedroom: 'Bedroom', navCraft: 'Craft',
+        headerPresentation: 'Present', headerNote: 'AN APARTMENT, BY ASAS', homeEyebrow: 'Welcome to an ASAS home',
+        homeTitleFirst: 'The door is open...', homeTitleSecond: 'Come on in.',
+        homeDescription: "We'll move from the entry into the living room, past the open kitchen and dining table. Then we'll get closer to each piece and discover its story.",
+        enterHome: 'Step inside', launchPresentation: 'Explore the presentation',
+        entryNote: 'A room-by-room journey · Scroll to continue',
+        closingEyebrow: 'The tour ends. Your story begins.',
+        closingTitleFirst: 'A home is more than', closingTitleSecond: "furniture. It's a feeling.",
+        closingDescription: 'Prices and specifications are illustrative. Visit the ASAS showroom, experience the materials in person, and find the piece that feels like home.',
+        restartTour: 'Start the tour again',
+        pricingDisclaimer: 'Prices are illustrative USD examples, not live currency conversions or verified showroom product data. Dimensions, materials, and country-of-origin details are examples too.',
+        footerNote: 'A room-by-room tour of ASAS · 2026',
+        roomLiving: '1 · Open-plan living', roomLounge: '2 · Lounge', roomDining: '3 · Dining room',
+        roomBedroom: '4 · Bedroom', roomCraft: '5 · A closer look at the dining table',
+        viewOn: 'First-person view · On', viewOff: 'First-person view · Off', reducedMotion: 'Reduced motion enabled',
+        enableView: 'Enable first-person view', disableView: 'Disable first-person view',
+        openMenu: 'Open menu', closeMenu: 'Close menu',
+        presentationControls: 'Presentation controls', previous: 'Previous', next: 'Next', endPresentation: 'End presentation',
+        previousScene: 'Previous scene', nextScene: 'Next scene',
+        homeScene: 'Home entrance', livingScene: 'Living room', loungeScene: 'Lounge',
+        diningScene: 'Dining room', bedroomScene: 'Bedroom', craftScene: 'Craft details', visitScene: 'End of tour',
+        livingHotspots: 'Living room furniture', loungeHotspots: 'Lounge furniture',
+        diningHotspots: 'Dining room furniture', bedroomHotspots: 'Bedroom furniture',
+        craftHotspots: 'Furniture and material details', brandHome: 'ASAS — Home', brandStart: 'ASAS — Back to start',
+        switchLanguage: 'Switch to Arabic'
+      },
+      ar: {
+        brandMark: 'أ', brandName: 'أساس', brandCaption: 'أثاث يليق بتفاصيل حياتك',
+        navLiving: 'المعيشة', navLounge: 'ركن الجلوس', navDining: 'السفرة', navBedroom: 'غرفة النوم', navCraft: 'تفاصيل الصنعة',
+        headerPresentation: 'ابدأ العرض', headerNote: 'بيت من أساس', homeEyebrow: 'أهلًا بك في بيت أساس',
+        homeTitleFirst: 'الباب مفتوح...', homeTitleSecond: 'اتفضل ادخل.',
+        homeDescription: 'هنعدّي من المدخل للصالون، ونشوف المطبخ المفتوح والسفرة. وبعدها نقرب لكل قطعة ونكتشف حكايتها.',
+        enterHome: 'ادخل البيت', launchPresentation: 'شاهد الجولة كعرض تقديمي',
+        entryNote: 'رحلة بين غرف البيت · مرّر لتكمل الجولة',
+        closingEyebrow: 'وصلنا لآخر الجولة',
+        closingTitleFirst: 'البيت مش بس', closingTitleSecond: 'أثاث. هو إحساس.',
+        closingDescription: 'الأسعار والمواصفات هنا أمثلة توضيحية. زور معرض أساس، شوف الخامات على حقيقتها، واختار القطعة اللي تحس إنها مكانها بيتك.',
+        restartTour: 'أعد الجولة من البداية',
+        pricingDisclaimer: 'الأسعار بالدولار أمثلة توضيحية وليست تحويلًا مباشرًا للعملة أو أسعارًا مؤكدة للمعرض. والمقاسات والخامات وبلد الصنع أمثلة كذلك.',
+        footerNote: 'جولة داخل بيت أساس · ٢٠٢٦',
+        roomLiving: '١ · الصالون المفتوح على المطبخ', roomLounge: '٢ · ركن الجلوس', roomDining: '٣ · غرفة الطعام',
+        roomBedroom: '٤ · غرفة النوم', roomCraft: '٥ · تفصيلة من السفرة',
+        viewOn: 'منظور الشخص الأول · مفعّل', viewOff: 'منظور الشخص الأول · متوقف', reducedMotion: 'تقليل الحركة مفعّل',
+        enableView: 'تشغيل منظور الشخص الأول', disableView: 'إيقاف منظور الشخص الأول',
+        openMenu: 'فتح القائمة', closeMenu: 'إغلاق القائمة',
+        presentationControls: 'أدوات العرض التقديمي', previous: 'السابق', next: 'التالي', endPresentation: 'إنهاء العرض',
+        previousScene: 'المشهد السابق', nextScene: 'المشهد التالي',
+        homeScene: 'مدخل الشقة', livingScene: 'غرفة المعيشة', loungeScene: 'ركن الجلوس',
+        diningScene: 'غرفة الطعام', bedroomScene: 'غرفة النوم', craftScene: 'تفاصيل الصنعة', visitScene: 'نهاية الجولة',
+        livingHotspots: 'قطع الأثاث في الصالون', loungeHotspots: 'قطع الأثاث في ركن الجلوس',
+        diningHotspots: 'قطع الأثاث في غرفة الطعام', bedroomHotspots: 'قطع الأثاث في غرفة النوم',
+        craftHotspots: 'تفاصيل الأثاث والخامات', brandHome: 'أساس — بداية الجولة', brandStart: 'أساس — العودة للبداية',
+        switchLanguage: 'التبديل إلى الإنجليزية'
+      }
+    };
+
+    let currentLanguage = localStorage.getItem('asas-language') === 'ar' ? 'ar' : 'en';
+
+    function getProductCopy(product) {
+      return currentLanguage === 'en' ? englishProductCopy[product.id] : product;
+    }
+
+    function setLanguage(language, persist = true) {
+      currentLanguage = language === 'ar' ? 'ar' : 'en';
+      const translations = uiTranslations[currentLanguage];
+      document.documentElement.lang = currentLanguage;
+      document.documentElement.dir = currentLanguage === 'ar' ? 'rtl' : 'ltr';
+
+      document.querySelectorAll('[data-i18n]').forEach((element) => {
+        const key = element.dataset.i18n;
+        if (translations[key]) {
+          element.textContent = translations[key];
+        }
+      });
+
+      document.title = currentLanguage === 'en'
+        ? 'ASAS | A home, room by room'
+        : 'أساس | حكاية بيت، غرفة بعد غرفة';
+      document.querySelector('meta[name="description"]').content = currentLanguage === 'en'
+        ? 'Step inside an ASAS home and explore thoughtful furniture, materials, and craftsmanship room by room.'
+        : 'جولة أساس المنزلية: ادخل إلى شقة متكاملة واكتشف قطع أثاث مختارة وخاماتها وتفاصيلها.';
+
+      document.querySelector('.brand[aria-label]').setAttribute('aria-label', translations.brandHome);
+      document.querySelector('.site-footer .brand').setAttribute('aria-label', translations.brandStart);
+      mainNav.setAttribute('aria-label', currentLanguage === 'en' ? 'Navigate the rooms' : 'التنقل بين الغرف');
+      menuToggle.setAttribute('aria-label', mainNav.classList.contains('is-open') ? translations.closeMenu : translations.openMenu);
+      document.querySelector('.journey-nav').setAttribute('aria-label', currentLanguage === 'en' ? 'Home tour scenes' : 'مشاهد الشقة');
+      journeyLinks.forEach((link, index) => {
+        const label = translations[sceneTranslationKeys[index]];
+        link.setAttribute('aria-label', label);
+        link.querySelector('span').textContent = label;
+      });
+      document.querySelector('.presentation-controls').setAttribute('aria-label', translations.presentationControls);
+      presentationPrevious.setAttribute('aria-label', translations.previousScene);
+      presentationPrevious.textContent = translations.previous;
+      presentationNext.setAttribute('aria-label', translations.nextScene);
+      presentationNext.textContent = translations.next;
+      presentationClose.setAttribute('aria-label', translations.endPresentation);
+      presentationClose.innerHTML = `${translations.endPresentation} <span aria-hidden="true">×</span>`;
+      languageToggle.textContent = currentLanguage === 'en' ? 'العربية' : 'English';
+      languageToggle.setAttribute('aria-label', translations.switchLanguage);
+      viewToggle.setAttribute('aria-label', reduceMotion
+        ? translations.reducedMotion
+        : firstPersonEnabled ? translations.disableView : translations.enableView);
+      viewLabel.textContent = reduceMotion
+        ? translations.reducedMotion
+        : firstPersonEnabled ? translations.viewOn : translations.viewOff;
+      document.querySelector('#home .text-link span[aria-hidden="true"]').textContent = currentLanguage === 'en' ? '→' : '←';
+
+      scenes.forEach((scene) => {
+        const roomLabel = scene.querySelector('.room-label');
+        if (roomLabel && roomLabel.dataset.i18n) {
+          roomLabel.textContent = translations[roomLabel.dataset.i18n];
+        }
+        const hotspotLayer = scene.querySelector('.hotspot-layer');
+        if (hotspotLayer && hotspotTranslationKeys[scene.id]) {
+          hotspotLayer.setAttribute('aria-label', translations[hotspotTranslationKeys[scene.id]]);
+        }
+
+        const products = productCatalog[scene.id];
+        if (products) {
+          const marker = scene.querySelector('.room-marker.is-selected') || scene.querySelector('.room-marker');
+          const product = marker
+            ? products.find((item) => item.id === marker.dataset.productId)
+            : products[0];
+          if (product) {
+            renderProduct(scene, product, marker);
+          }
+        }
+      });
+
+      if (persist) {
+        localStorage.setItem('asas-language', currentLanguage);
+      }
+    }
+
+    function renderProduct(scene, product, marker, focus = null) {
+      const card = scene.querySelector('.detail-card');
+      const copy = getProductCopy(product);
+      const specs = card.querySelectorAll('.product-specs dd:not([data-product-origin])');
+      const labels = card.querySelectorAll('.product-specs dt');
+
+      card.querySelector('.product-number').textContent = product.sku;
+      card.querySelector('h2').textContent = copy.name;
+      card.querySelector('.product-subtitle').textContent = copy.description;
+      card.querySelector('.price').textContent = copy.price || product.price;
+      card.querySelector('.price-note').textContent = copy.priceNote;
+      card.querySelector('[data-product-origin]').previousElementSibling.textContent = currentLanguage === 'en'
+        ? 'Made in'
+        : 'بلد الصنع';
+      card.querySelector('[data-product-origin]').textContent = currentLanguage === 'en'
+        ? 'Egypt · illustrative example'
+        : 'مصر · مثال توضيحي';
+      card.querySelector('.craft-note').textContent = copy.note;
+
+      copy.specs.forEach(([label, value], index) => {
+        labels[index].textContent = label;
+        specs[index].textContent = value;
+      });
+
+      scene.querySelectorAll('.room-marker').forEach((button) => {
+        const selected = button === marker;
+        button.classList.toggle('is-selected', selected);
+        button.setAttribute('aria-pressed', String(selected));
+        const markerProduct = productCatalog[scene.id].find((item) => item.id === button.dataset.productId);
+        if (markerProduct) {
+          const markerCopy = getProductCopy(markerProduct);
+          button.setAttribute('aria-label', currentLanguage === 'en'
+            ? `View ${markerCopy.name}, price ${markerCopy.price || markerProduct.price}`
+            : `عرض ${markerCopy.name}، السعر ${markerProduct.price}`);
+          const markerLabel = button.querySelector('.marker-label');
+          if (markerLabel) {
+            markerLabel.textContent = markerCopy.name;
+          }
+        }
+      });
+
+      if (focus !== null) {
+        scene.dataset.productFocused = String(focus);
+        scene.classList.toggle('is-product-focused', focus);
+      }
+
+      if (marker) {
+        scene.dataset.productFocusX = String(product.x);
+        scene.dataset.productFocusY = String(product.y);
+        if (scene.classList.contains('is-current')) {
+          window.clearTimeout(detailPlacementTimer);
+          detailPlacementTimer = window.setTimeout(() => positionProductDetails(scene, marker), 680);
+        }
+      }
+
+      requestCameraUpdate();
+    }
+
+    function positionProductDetails(scene, marker) {
+      const card = scene.querySelector('.detail-card');
+      if (window.matchMedia('(max-width: 760px)').matches) {
+        card.style.removeProperty('left');
+        card.style.removeProperty('right');
+        card.style.removeProperty('top');
+        return;
+      }
+
+      const sceneBounds = scene.getBoundingClientRect();
+      const markerBounds = marker.getBoundingClientRect();
+      const cardBounds = card.getBoundingClientRect();
+      const padding = 24;
+      const left = Math.max(padding, Math.min(
+        markerBounds.left + markerBounds.width / 2 - cardBounds.width / 2 - sceneBounds.left,
+        sceneBounds.width - cardBounds.width - padding
+      ));
+      const top = Math.max(padding, Math.min(
+        markerBounds.top - cardBounds.height - 24 - sceneBounds.top,
+        sceneBounds.height - cardBounds.height - 84
+      ));
+
+      card.style.left = `${left}px`;
+      card.style.right = 'auto';
+      card.style.top = `${top}px`;
+    }
+
+    function buildProductHotspots() {
+      Object.entries(productCatalog).forEach(([sceneId, products]) => {
+        const scene = document.getElementById(sceneId);
+        const layer = scene.querySelector('.hotspot-layer');
+
+        products.forEach((product, index) => {
+          const copy = getProductCopy(product);
+          const button = document.createElement('button');
+          button.className = 'room-marker';
+          button.type = 'button';
+          button.style.left = `${product.x * 100}%`;
+          button.style.top = `${product.y * 100}%`;
+          button.dataset.productId = product.id;
+          button.setAttribute('aria-label', currentLanguage === 'en'
+            ? `View ${copy.name}, price ${copy.price || product.price}`
+            : `عرض ${copy.name}، السعر ${product.price}`);
+          button.setAttribute('aria-pressed', 'false');
+          button.innerHTML = '<span class="marker-dot" aria-hidden="true"></span>';
+
+          const label = document.createElement('span');
+          label.className = 'marker-label';
+          label.textContent = copy.name;
+          button.append(label);
+          button.addEventListener('click', () => {
+            const alreadyFocused = button.classList.contains('is-selected')
+              && scene.dataset.productFocused === 'true';
+            renderProduct(scene, product, button, !alreadyFocused);
+          });
+          layer.append(button);
+
+          if (index === 0) {
+            renderProduct(scene, product, button, false);
+          }
+        });
+      });
+    }
+
+    function activateScene(index) {
+      if (activeSceneIndex === index) {
+        updatePresentationControls(index);
+        return;
+      }
+
+      activeSceneIndex = index;
+      backdrops.forEach((image, imageIndex) => {
+        image.classList.toggle('is-active', index === imageIndex);
+      });
+
+      scenes.forEach((scene, sceneIndex) => {
+        scene.classList.toggle('is-current', sceneIndex === index);
+      });
+
+      journeyLinks.forEach((link, linkIndex) => {
+        if (linkIndex === index) {
+          link.classList.add('is-active');
+          link.setAttribute('aria-current', 'step');
+        } else {
+          link.classList.remove('is-active');
+          link.removeAttribute('aria-current');
+        }
+      });
+
+      counter.textContent = String(index + 1).padStart(2, '0');
+      updatePresentationControls(index);
+
+      const currentScene = scenes[index];
+      if (currentScene && productCatalog[currentScene.id]) {
+        const firstProduct = productCatalog[currentScene.id][0];
+        const marker = currentScene.querySelector('.room-marker');
+        renderProduct(currentScene, firstProduct, marker, false);
+      }
+
+      requestCameraUpdate();
+    }
+
+    function updatePresentationControls(index) {
+      presentationPrevious.disabled = index <= 0;
+      presentationNext.disabled = index >= scenes.length - 1;
+      presentationPosition.textContent = `${String(index + 1).padStart(2, '0')} / ${String(scenes.length).padStart(2, '0')}`;
+    }
+
+    function goToScene(index) {
+      const boundedIndex = Math.max(0, Math.min(index, scenes.length - 1));
+      const scene = scenes[boundedIndex];
+      if (scene) {
+        activateScene(boundedIndex);
+        scene.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' });
+      }
+    }
+
+    function setPresentationMode(enabled, startIndex = activeSceneIndex) {
+      document.body.classList.toggle('is-presenting', enabled);
+      document.documentElement.classList.toggle('is-presenting', enabled);
+      presentationOpeners.forEach((button) => {
+        button.setAttribute('aria-pressed', String(enabled));
+      });
+
+      if (enabled) {
+        closeMenu();
+        goToScene(startIndex < 0 ? 0 : startIndex);
+      }
+    }
+
+    function updateCamera() {
+      cameraFrame = 0;
+      const viewportCenter = window.innerHeight * 0.5;
+
+      scenes.forEach((scene, index) => {
+        const bounds = scene.getBoundingClientRect();
+        if (bounds.bottom < 0 || bounds.top > window.innerHeight) {
+          return;
+        }
+
+        const progress = Math.max(0, Math.min(1, (viewportCenter - bounds.top) / bounds.height));
+        const baseScale = reduceMotion ? 1 : 1.12 - Math.sin(progress * Math.PI) * 0.04;
+        const baseX = reduceMotion ? 0 : (0.5 - progress) * (index % 2 === 0 ? 22 : -22);
+        const baseY = reduceMotion ? 0 : (0.5 - progress) * 26;
+        const current = index === activeSceneIndex;
+        const focusX = Number(scene.dataset.productFocusX || 0.5);
+        const focusY = Number(scene.dataset.productFocusY || 0.5);
+        const productFocused = current && scene.dataset.productFocused === 'true';
+        const centered = Math.abs(focusX - 0.5) <= 0.1;
+        const zoom = current && !reduceMotion
+          ? productFocused
+            ? centered ? 0.94 : Math.min(1.95, 1.4 + Math.abs(focusX - 0.5) * 1.3)
+            : firstPersonEnabled ? 1.28 : 1.1
+          : baseScale;
+        const boundedPan = (focus, size) => {
+          const maxPan = Math.max(0, (zoom - 1) * size / 2);
+          const desiredPan = (0.5 - focus) * size * zoom;
+          return Math.max(-maxPan, Math.min(maxPan, desiredPan)) / zoom;
+        };
+        const horizontal = current && !reduceMotion
+          ? productFocused
+            ? centered ? 0 : boundedPan(focusX, window.innerWidth)
+            : firstPersonEnabled ? -pointerX * window.innerWidth * 0.08 : baseX
+          : baseX;
+        const vertical = current && !reduceMotion
+          ? productFocused
+            ? centered ? 0 : boundedPan(focusY, window.innerHeight)
+            : firstPersonEnabled ? -pointerY * window.innerHeight * 0.08 : baseY
+          : baseY;
+        const x = `${horizontal.toFixed(1)}px`;
+        const y = `${vertical.toFixed(1)}px`;
+
+        backdrops[index].style.setProperty('--camera-scale', zoom.toFixed(3));
+        backdrops[index].style.setProperty('--camera-x', x);
+        backdrops[index].style.setProperty('--camera-y', y);
+        scene.style.setProperty('--focus-scale', zoom.toFixed(3));
+        scene.style.setProperty('--camera-x', x);
+        scene.style.setProperty('--camera-y', y);
+      });
+    }
+
+    function requestCameraUpdate() {
+      if (!cameraFrame) {
+        cameraFrame = window.requestAnimationFrame(updateCamera);
+      }
+    }
+
+    function closeMenu() {
+      menuToggle.setAttribute('aria-expanded', 'false');
+      menuToggle.setAttribute('aria-label', uiTranslations[currentLanguage].openMenu);
+      mainNav.classList.remove('is-open');
+    }
+
+    buildProductHotspots();
+    setLanguage(currentLanguage, false);
+    updatePresentationControls(0);
+    if (reduceMotion) {
+      viewToggle.disabled = true;
+    }
+
+    viewToggle.addEventListener('click', () => {
+      firstPersonEnabled = !firstPersonEnabled;
+      pointerX = 0;
+      pointerY = 0;
+      viewToggle.setAttribute('aria-pressed', String(firstPersonEnabled));
+      viewToggle.setAttribute('aria-label', firstPersonEnabled
+        ? uiTranslations[currentLanguage].disableView
+        : uiTranslations[currentLanguage].enableView);
+      viewLabel.textContent = firstPersonEnabled
+        ? uiTranslations[currentLanguage].viewOn
+        : uiTranslations[currentLanguage].viewOff;
+      requestCameraUpdate();
+    });
+
+    languageToggle.addEventListener('click', () => {
+      setLanguage(currentLanguage === 'en' ? 'ar' : 'en');
+    });
+
+    window.addEventListener('pointermove', (event) => {
+      if (!firstPersonEnabled || reduceMotion || event.pointerType !== 'mouse') {
+        return;
+      }
+
+      pointerX = (event.clientX / window.innerWidth) * 2 - 1;
+      pointerY = (event.clientY / window.innerHeight) * 2 - 1;
+      requestCameraUpdate();
+    }, { passive: true });
+
+    menuToggle.addEventListener('click', () => {
+      const open = menuToggle.getAttribute('aria-expanded') === 'true';
+      menuToggle.setAttribute('aria-expanded', String(!open));
+      menuToggle.setAttribute('aria-label', open
+        ? uiTranslations[currentLanguage].openMenu
+        : uiTranslations[currentLanguage].closeMenu);
+      mainNav.classList.toggle('is-open', !open);
+    });
+
+    mainNav.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', closeMenu);
+    });
+
+    presentationOpeners.forEach((button) => {
+      button.addEventListener('click', () => {
+        const startIndex = button.hasAttribute('data-presentation-start') ? 0 : activeSceneIndex;
+        setPresentationMode(true, startIndex);
+      });
+    });
+
+    presentationPrevious.addEventListener('click', () => goToScene(activeSceneIndex - 1));
+    presentationNext.addEventListener('click', () => goToScene(activeSceneIndex + 1));
+    presentationClose.addEventListener('click', () => setPresentationMode(false));
+
+    document.addEventListener('keydown', (event) => {
+      if (document.body.classList.contains('is-presenting')) {
+        if (event.key === 'Escape') {
+          setPresentationMode(false);
+          return;
+        }
+
+        const isEditing = event.target instanceof HTMLElement
+          && event.target.closest('input, textarea, select, [contenteditable="true"]');
+        if (isEditing) {
+          return;
+        }
+
+        if (['ArrowDown', 'ArrowRight', 'PageDown', ' '].includes(event.key)) {
+          event.preventDefault();
+          goToScene(activeSceneIndex + 1);
+        } else if (['ArrowUp', 'ArrowLeft', 'PageUp'].includes(event.key)) {
+          event.preventDefault();
+          goToScene(activeSceneIndex - 1);
+        } else if (event.key === 'Home') {
+          event.preventDefault();
+          goToScene(0);
+        } else if (event.key === 'End') {
+          event.preventDefault();
+          goToScene(scenes.length - 1);
+        }
+        return;
+      }
+
+      if (event.key === 'Escape') {
+        closeMenu();
+      }
+    });
+
+    window.addEventListener('scroll', requestCameraUpdate, { passive: true });
+    window.addEventListener('resize', () => {
+      requestCameraUpdate();
+
+      if (window.matchMedia('(max-width: 760px)').matches) {
+        scenes.forEach((scene) => {
+          const card = scene.querySelector('.detail-card');
+          if (card) {
+            card.style.removeProperty('left');
+            card.style.removeProperty('right');
+            card.style.removeProperty('top');
+          }
+        });
+      } else {
+        const currentScene = activeSceneIndex >= 0 ? scenes[activeSceneIndex] : null;
+        const selectedMarker = currentScene
+          ? currentScene.querySelector('.room-marker.is-selected')
+          : null;
+        if (currentScene && selectedMarker) {
+          window.clearTimeout(detailPlacementTimer);
+          detailPlacementTimer = window.setTimeout(
+            () => positionProductDetails(currentScene, selectedMarker),
+            680
+          );
+        }
+      }
+    });
+    requestCameraUpdate();
+
+    if ('IntersectionObserver' in window) {
+      const sceneObserver = new IntersectionObserver((entries) => {
+        const current = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (current) {
+          activateScene(Number(current.target.dataset.scene));
+        }
+      }, { threshold: [0.35, 0.6, 0.8] });
+
+      scenes.forEach((scene) => sceneObserver.observe(scene));
+    } else {
+      let scheduled = false;
+      window.addEventListener('scroll', () => {
+        if (scheduled) {
+          return;
+        }
+        scheduled = true;
+        window.requestAnimationFrame(() => {
+          const center = window.innerHeight * 0.55;
+          const index = scenes.reduce((closest, scene, sceneIndex) => {
+            const bounds = scene.getBoundingClientRect();
+            const distance = Math.abs(bounds.top + bounds.height / 2 - center);
+            return distance < closest.distance ? { index: sceneIndex, distance } : closest;
+          }, { index: 0, distance: Infinity }).index;
+          activateScene(index);
+          scheduled = false;
+        });
+      }, { passive: true });
+    }
+  </script>
+</body>
+</html>
